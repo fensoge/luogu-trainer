@@ -95,11 +95,22 @@ git push -u origin main
 
 洛谷题面本身不标注 CF 分数，此换算仅用于把 CF 目标近似落到洛谷难度区间；交叉区间会同时纳入（如 CF 1400~1700 → 普及 + 普及+/提高−）。
 
+## 公开使用（给访问者）
+
+把仓库部署到 GitHub Pages 后，任何人打开站点：
+
+- **游客即可用**：题目列表 / 题面 / 难度与标签筛选 / 两段计时训练，全部匿名可用（内置 jina + allorigins 公共代理，无需任何配置）
+- **「思路 + 参考代码」需要两步解锁**（洛谷题解页强制登录，无法匿名）：
+  1. **部署自己的 Worker 代理**（约 2 分钟）：打开 [Cloudflare](https://dash.cloudflare.com) → Workers & Pages → 创建 Worker → 粘贴本仓库 [`worker.js`](./worker.js) → 部署 → 把地址填进工具「高级设置 → Worker 代理地址」
+  2. **填自己的洛谷登录 Cookie**：F12 → Network → 复制任意请求的 Cookie 头，粘贴到「高级设置 → 洛谷 Cookie」
+- 为什么不能共用？Cookie 是个人账号凭证，**不应交给第三方**；每人用自己的 Worker + Cookie，互不泄露。题解内容同样尊重洛谷题解标准，仅供个人学习。
+
 ## 技术说明
 
 - 数据来自洛谷 SSR 内嵌的 `lentille-context` JSON（匿名接口，无需登录即可读列表/题面）
-- 题解页解析：`splitSolution()` 把题解 HTML 切成「思路」（去掉 `<pre>` 代码块）与「参考代码」（按语言分组）
-- 代理链自动降级：直连 → allorigins → 自定义 Worker；某代理失效会自动切换并记忆可用项
+- 题解页解析：`splitSolution()` 把题解（新版为 markdown）切成「思路」（剥掉代码围栏/`<pre>` 块）与「参考代码」（按语言分组、同语言多段自动编号 cpp1/cpp2）
+- 题解优选：按「内容命中所选算法标签关键词」加权排序（命中 ≈ 抵 600 赞），避免选到与训练目标无关做法的题解
+- 代理链自动降级：自定义 Worker（若配置）→ jina（HTML 页）→ allorigins（JSON）→ 直连；坏响应自动换代理并记忆可用项
 - 公式（KaTeX）与代码高亮（highlight.js）走 CDN，断网时仅样式降级，功能不受影响
 - 无任何构建步骤；本地直接双击 `index.html` 或 `python -m http.server` 即可预览（联网功能需网络）
 

@@ -316,9 +316,12 @@ function splitSolution(content) {
   }
   // markdown 格式：剥代码围栏
   const codes = [];
+  let codeCount = 0;
   const thoughtMd = content.replace(/```([a-zA-Z0-9_+-]*)[ \t]*\r?\n([\s\S]*?)(?:\r?\n)?```/g, (m, lang, code) => {
-    codes.push({ lang: langOfFence(lang), text: code.replace(/\r\n/g, '\n').trim() });
-    return '<div class="code-removed">（参考代码已隐藏 —— 第三阶段再解锁）</div>';
+    codeCount++;
+    const l = langOfFence(lang);
+    codes.push({ lang: l, text: code.replace(/\r\n/g, '\n').trim() });
+    return `<div class="code-removed">（第 ${codeCount} 段参考代码已隐藏 · ${esc(l)}）</div>`;
   });
   return { thoughtHtml: sanitizeHtml(mdToHtml(thoughtMd)), codes };
 }
@@ -348,7 +351,38 @@ function splitHtmlSolution(content) {
   return { thoughtHtml: html, codes };
 }
 
-async function fetchSolution(pid) {
+// 标签关键词 → 用于在题解内容中匹配"做法与所选标签一致"的题解
+const TAG_ALIAS = {
+  '动态规划': ['dp', '动规', '动态规划', '背包', '区间dp'],
+  '单调性': ['单调', '尺取', '双指针', '二分', '单调栈', '单调队列'],
+  '图论': ['图论', '最短路', 'dfs', 'bfs', '树上', '树', '图'],
+  '贪心': ['贪心', '排序'],
+  '数学': ['数学', '数论', '组合', 'gcd', '质数'],
+  '搜索': ['搜索', 'dfs', 'bfs', '回溯', '剪枝'],
+  '字符串': ['字符串', 'kmp', 'hash', '哈希', 'trie'],
+  '数据结构': ['数据结构', '线段树', '树状数组', '平衡树', 'st表', '堆'],
+  '模拟': ['模拟', '暴力'],
+  '分治': ['分治', 'cdq', '整体二分'],
+  '博弈论': ['博弈', 'sg', 'nim'],
+  '计算几何': ['几何', '凸包', '扫描线'],
+  '数论': ['数论', 'gcd', '质数', '逆元', '欧拉'],
+  '并查集': ['并查集', 'dSU'],
+  '最短路': ['最短路', 'dijkstra', 'spfa', 'floyd', 'bellman'],
+  '最小生成树': ['最小生成树', 'kruskal', 'prim', 'mst'],
+  '网络流': ['网络流', 'dinic', '最大流', '费用流'],
+};
+function buildTagKeywords(tagNames) {
+  const out = [];
+  for (const t of tagNames) {
+    const n = String(t || '').toLowerCase();
+    if (!n) continue;
+    out.push(n);
+    (TAG_ALIAS[n] || []).forEach(a => out.push(a.toLowerCase()));
+  }
+  return out;
+}
+
+async function fetchSolution(pid, tagNames = []) {
   // 题解页需要登录态，只走自定义 Worker 代理（jina/allorigins 无法携带 Cookie）
   const html = await fetchText('https://www.luogu.com.cn/problem/solution/' + pid, { cookie: S.cookie, workerOnly: true, timeout: 25000, expect: (t) => t.includes('lentille-context') });
   const d = extractLentille(html);
@@ -360,7 +394,15 @@ async function fetchSolution(pid) {
   if (d.data && Array.isArray(d.data.solutions && d.data.solutions.result) && d.data.solutions.result.length) {
     const list = d.data.solutions.result.filter(s => s && s.content && s.content.trim().length > 30);
     if (list.length) {
-      sol = list.slice().sort((a, b) => (b.upvote || 0) - (a.upvote || 0))[0];
+      const kws = buildTagKeywords(tagNames);
+      const scored = list.map(s => {
+        const text = ((s.content || '') + '\n' + (s.title || '')).toLowerCase();
+        const hits = kws.filter(k => text.includes(k)).length;
+        // 命中一个关键词 ≈ 抵 600 赞；同分时赞多的优先
+        return { s, score: (s.upvote || 0) + hits * 600, hits };
+      });
+      scored.sort((a, b) => b.score - a.score || (b.s.upvote || 0) - (a.s.upvote || 0));
+      sol = scored[0].s;
     }
   } else if (d.data && d.data.solution) {
     sol = d.data.solution;
@@ -608,7 +650,9 @@ function cardBodyHtml(p) {
   // 思路
   const thoughtInner = p.thought ? p.thought.html
     : (p.status === 'fail'
-        ? `<p class="dim">获取失败：${esc(p.error === 'NEED_LOGIN' ? '未登录洛谷，请在高级设置粘贴 Cookie' : (p.error || '未知错误'))}</p><button class="btn ghost small" onclick="retrySolution('${esc(p.pid)}')">↻ 重试获取</button>`
+        ? `<p class="dim">获取失败：${esc(p.error === 'NEED_LOGIN'
+            ? '题解需登录洛谷：请在高级设置配置 ① Worker 代理地址 ② 洛谷 Cookie（两步教程见 README）'
+            : (p.error || '未知错误'))}</p><button class="btn ghost small" onclick="retrySolution('${esc(p.pid)}')">↻ 重试获取</button>`
         : '<p class="dim">（思路尚未获取）</p>');
   const thoughtBlock = `<div class="section-title"><span class="tag">💡</span> 解题思路${p.thought && p.thought.author ? ' · ' + esc(p.thought.author) : ''}</div>
     <div class="thought">${thoughtInner}</div>`;
@@ -637,9 +681,16 @@ function codesHtml(p) {
     groups = [...pref, ...rest];
   }
   if (!groups.length) groups = p.codes.map((c, i) => ({ ...c, i }));
+  // 同语言多段加序号：cpp 1 / cpp 2
+  const counter = {};
+  const labeled = groups.map(g => {
+    counter[g.lang] = (counter[g.lang] || 0) + 1;
+    const label = counter[g.lang] > 1 ? `${g.lang} ${counter[g.lang]}` : g.lang;
+    return { ...g, label };
+  });
   const id = 'codes-' + p.pid;
-  const tabs = groups.map((c, gi) => `<span class="code-tab${gi === 0 ? ' on' : ''}" data-lang="${c.lang}" onclick="switchCodeTab('${esc(p.pid)}',${gi})">${esc(c.lang)}</span>`).join('');
-  const blocks = groups.map((c, gi) =>
+  const tabs = labeled.map((c, gi) => `<span class="code-tab${gi === 0 ? ' on' : ''}" data-lang="${c.lang}" onclick="switchCodeTab('${esc(p.pid)}',${gi})">${esc(c.label)}</span>`).join('');
+  const blocks = labeled.map((c, gi) =>
     `<div class="code-block" data-tab="${gi}" ${gi === 0 ? '' : 'hidden'}>
        <button class="code-copy" onclick="copyCode('${esc(p.pid)}',${c.i})">复制</button>
        <pre><code class="language-${esc(c.lang === 'other' ? 'plaintext' : c.lang)}">${esc(c.text)}</code></pre>
@@ -742,7 +793,8 @@ async function fetchOneSolution(pid) {
   p.status = 'fetching';
   saveSession(); renderBgProgress(); renderCardStatus(p);
   try {
-    const r = await fetchSolution(pid);
+    const tagNames = (p.tags || []).map(id => S.tagNames[id]).filter(Boolean);
+    const r = await fetchSolution(pid, tagNames);
     p.thought = { title: r.title, author: r.author, html: r.thoughtHtml };
     p.codes = r.codes;
     p.status = 'ready';
