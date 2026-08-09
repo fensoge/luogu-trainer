@@ -120,7 +120,7 @@ const PROXY_LIST = [
 let proxyOrder = null; // 缓存当前可用的代理顺序
 
 async function fetchText(url, opts = {}) {
-  const { cookie, timeout = 22000, workerOnly = false } = opts;
+  const { cookie, timeout = 22000, workerOnly = false, expect = null } = opts;
   let order;
   if (workerOnly) {
     // 题解等需要登录态的资源：只走自定义 Worker
@@ -158,8 +158,12 @@ async function fetchText(url, opts = {}) {
         }
         if (!res.ok) { lastErr = new Error('HTTP ' + res.status); continue; }
         const text = await res.text();
-        // 解析失败说明该代理拿到的不是目标内容（如验证页），换下一个
-        if (text.length < 200 && !text.includes('{')) { lastErr = new Error('空响应'); continue; }
+        // 内容类型校验：代理返回的可能是错误页/验证页，需换下一个代理
+        const bad = text.length < 200 && !text.includes('{');
+        const badJson = expect === 'json' && !/^\s*[\[{]/.test(text);
+        const badHtml = typeof expect === 'string' && expect === 'html' && !/<html|<!doctype/i.test(text) && !text.trim().startsWith('{');
+        const badFn = typeof expect === 'function' && !expect(text);
+        if (bad || badJson || badHtml || badFn) { lastErr = new Error('响应格式异常'); continue; }
         if (S.proxyMode === 'auto') proxyOrder = [key, ...order.filter(k => k !== key)];
         return text;
       } catch (e) {
@@ -182,7 +186,7 @@ function extractLentille(html) {
 }
 
 async function fetchTags() {
-  const html = await fetchText('https://www.luogu.com.cn/_lfe/tags/zh-CN', { timeout: 15000 });
+  const html = await fetchText('https://www.luogu.com.cn/_lfe/tags/zh-CN', { timeout: 15000, expect: 'json' });
   const d = JSON.parse(html);
   S.allTags = (d.tags || []).filter(t => t.type === 2).sort((a, b) => (a.name || '').localeCompare(b.name, 'zh'));
   S.tagNames = {};
@@ -195,7 +199,7 @@ async function fetchListPage(page, { difficulty, tag, keyword } = {}) {
   if (difficulty != null) q.set('difficulty', String(difficulty));
   if (tag) q.set('tag', String(tag));
   if (keyword) q.set('keyword', keyword);
-  const html = await fetchText('https://www.luogu.com.cn/problem/list?' + q.toString(), { timeout: 25000 });
+  const html = await fetchText('https://www.luogu.com.cn/problem/list?' + q.toString(), { timeout: 25000, expect: (t) => t.includes('lentille-context') });
   const d = extractLentille(html);
   if (!d || !d.data || !d.data.problems) throw new Error('题目列表解析失败（可能被代理拦截）');
   return d.data.problems;
@@ -315,7 +319,7 @@ function splitSolution(content) {
 
 async function fetchSolution(pid) {
   // 题解页需要登录态，只走自定义 Worker 代理（jina/allorigins 无法携带 Cookie）
-  const html = await fetchText('https://www.luogu.com.cn/problem/solution/' + pid, { cookie: S.cookie, workerOnly: true, timeout: 25000 });
+  const html = await fetchText('https://www.luogu.com.cn/problem/solution/' + pid, { cookie: S.cookie, workerOnly: true, timeout: 25000, expect: (t) => t.includes('lentille-context') });
   const d = extractLentille(html);
   if (!d) throw new Error('题解页解析失败');
   const err = d.data && (d.data.errorCode || (d.data.error && d.data.error.code));
@@ -330,7 +334,7 @@ async function fetchSolution(pid) {
 
 // 获取题面（惰性加载用）
 async function fetchProblemContent(pid) {
-  const html = await fetchText('https://www.luogu.com.cn/problem/' + pid, { timeout: 25000 });
+  const html = await fetchText('https://www.luogu.com.cn/problem/' + pid, { timeout: 25000, expect: (t) => t.includes('lentille-context') });
   const d = extractLentille(html);
   if (!d || !d.data || !d.data.problem) throw new Error('题面解析失败');
   const pr = d.data.problem;
@@ -444,8 +448,10 @@ async function netSelfTest() {
     if (p.key === 'worker' && !S.workerUrl) { results.push('Worker: 未配置'); continue; }
     try {
       S.proxyMode = p.key;
-      const t = await fetchText('https://www.luogu.com.cn/_lfe/tags/zh-CN', { timeout: 12000 });
-      results.push(`${p.label}: ${t.includes('"tags"') ? '✅' : '⚠️'}`);
+      const t = await fetchText('https://www.luogu.com.cn/_lfe/tags/zh-CN', { timeout: 12000, expect: 'json' });
+      let ok = false;
+      try { ok = !!(JSON.parse(t) && JSON.parse(t).tags); } catch (e) { ok = false; }
+      results.push(`${p.label}: ${ok ? '✅' : '⚠️'}`);
     } catch (e) {
       results.push(`${p.label}: ${e.code === 'NEED_LOGIN' ? '需登录' : '❌'}`);
     }
