@@ -3,110 +3,88 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🔑 洛谷 Cookie 快速获取 · 训练舱助手</title>
-<link rel="stylesheet" href="style.css?v=7">
+<title>🔑 洛谷 Cookie 获取教程 · 训练舱</title>
+<link rel="stylesheet" href="style.css?v=8">
 <style>
-  .step-card { border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin: 14px 0; background: rgba(21,30,45,.6); }
-  .step-card h3 { font-size: 15px; margin-bottom: 10px; color: var(--acc); }
-  .step-card p, .step-card li { font-size: 13.5px; color: var(--text-dim); line-height: 1.9; }
-  .step-card b { color: var(--text); }
-  .bookmarklet-wrap { margin: 14px 0; padding: 18px; border: 1px dashed var(--acc); border-radius: 12px; text-align: center; background: rgba(77,230,140,.06); }
-  .bookmarklet-wrap a { font-size: 16px; font-weight: 800; padding: 10px 22px; display: inline-block; border: 1px solid var(--acc); border-radius: 10px; background: rgba(77,230,140,.12); text-decoration: none; }
-  .bookmarklet-wrap a:hover { background: rgba(77,230,140,.25); text-decoration: none; }
-  .bookmarklet-wrap .sub { font-size: 12px; color: var(--text-faint); margin-top: 10px; }
-  code.inline { font-family: var(--mono); background: var(--panel2); padding: 1px 7px; border-radius: 6px; border: 1px solid var(--line); font-size: 12.5px; }
-  .alt { margin-top: 10px; }
-  details.alt summary { cursor: pointer; color: var(--text-dim); font-size: 13px; }
-  .warn-box { border: 1px solid rgba(255,180,84,.4); background: rgba(255,180,84,.06); border-radius: 12px; padding: 14px 18px; font-size: 12.5px; color: var(--text-dim); line-height: 1.9; margin-top: 16px; }
+  .step { border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin: 14px 0; background: rgba(21,30,45,.6); }
+  .step h3 { font-size: 15px; margin-bottom: 8px; }
+  .step h3 .n { display: inline-block; min-width: 26px; text-align: center; background: var(--acc); color: #06220f; border-radius: 7px; font-size: 13px; font-weight: 800; margin-right: 8px; padding: 2px 6px; }
+  .step p { font-size: 13.5px; color: var(--text-dim); line-height: 1.9; }
+  .step b { color: var(--text); }
+  code.inline { font-family: var(--mono); background: var(--panel2); padding: 1px 7px; border-radius: 6px; border: 1px solid var(--line); font-size: 12.5px; color: var(--acc); }
+  .tip { border: 1px solid rgba(255,180,84,.4); background: rgba(255,180,84,.06); border-radius: 12px; padding: 12px 16px; font-size: 12.5px; color: var(--text-dim); line-height: 1.9; margin-top: 16px; }
+  /* 模拟 Network 面板示意图 */
+  .mock { margin: 14px 0; border: 1px solid var(--line-strong); border-radius: 12px; overflow: hidden; font-family: var(--mono); font-size: 12px; }
+  .mock-bar { background: #16202e; padding: 8px 14px; color: var(--text-dim); border-bottom: 1px solid var(--line); display: flex; gap: 16px; }
+  .mock-bar .tab.on { color: var(--acc); border-bottom: 2px solid var(--acc); padding-bottom: 3px; }
+  .mock-row { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+  .mock-row .name { padding: 8px 14px; color: var(--acc); flex: 1; }
+  .mock-row .mark { background: rgba(77,230,140,.15); border-left: 2px solid var(--acc); color: var(--text-dim); padding: 8px 12px; font-size: 11px; flex: 1; }
+  .mock-detail { background: var(--panel2); padding: 12px 14px; color: var(--text-dim); line-height: 2; }
+  .mock-detail .hl { color: var(--acc-amber); font-weight: 700; }
 </style>
 </head>
 <body>
 <div class="bg-grid"></div>
 <header class="topbar"><div class="topbar-inner">
   <div class="brand"><span class="brand-mark">🔑</span>
-    <div class="brand-text"><h1>洛谷 Cookie 快速获取</h1><p>30 秒搞定 · 无需打开开发者工具</p></div>
+    <div class="brand-text"><h1>洛谷 Cookie 获取教程</h1><p>开发者工具（F12）一步一步来 · 全程 1 分钟</p></div>
   </div>
 </div></header>
 
 <main class="shell">
   <section class="panel">
-    <div class="panel-head"><h2><span class="idx">01</span> 三步拿到你的 Cookie</h2></div>
+    <div class="panel-head"><h2><span class="idx">01</span> 获取洛谷登录 Cookie</h2></div>
 
-    <div class="step-card">
-      <h3>① 登录洛谷（新窗口）</h3>
-      <p>点击 <a href="https://www.luogu.com.cn" target="_blank" rel="noopener">luogu.com.cn</a> 并<b>登录你的账号</b>。登录后保持在那个页面，别关。</p>
+    <div class="step">
+      <h3><span class="n">1</span>登录洛谷</h3>
+      <p>打开 <a href="https://www.luogu.com.cn" target="_blank" rel="noopener">luogu.com.cn</a> 并<b>登录你的账号</b>（没登录的话后面找不到 <code class="inline">_uid</code>）。</p>
     </div>
 
-    <div class="step-card">
-      <h3>② 安装「洛谷 Cookie 复制器」扩展（推荐，支持全部 Cookie）</h3>
-      <p>⚠️ 洛谷把关键 Cookie（<code class="inline">_uid</code> / <code class="inline">__client_id</code>）标记为 <b>HttpOnly</b>，网页脚本（书签）读不到，只有扩展能一键复制全量。</p>
-      <p>安装步骤（一次约 1 分钟，之后永久可用）：</p>
-      <ol>
-        <li>打开仓库 <a href="https://github.com/fensoge/luogu-trainer" target="_blank" rel="noopener">github.com/fensoge/luogu-trainer</a> → 绿色 <b>Code</b> → <b>Download ZIP</b> → 解压</li>
-        <li>Chrome / Edge 地址栏输入 <code class="inline">chrome://extensions</code> 回车 → 打开右上角「开发者模式」</li>
-        <li>点「<b>加载已解压的扩展程序</b>」→ 选择解压出的 <code class="inline">extension</code> 文件夹</li>
-        <li>工具栏出现 🐦 图标即安装成功（固定到工具栏更方便）</li>
-      </ol>
+    <div class="step">
+      <h3><span class="n">2</span>打开开发者工具</h3>
+      <p>在洛谷页面上<b>右键</b>空白处 → 点「<b>检查</b>」（Inspect）；或直接按 <b>F12</b>。右侧/底部会弹出开发者工具面板。</p>
     </div>
 
-    <div class="step-card">
-      <h3>③ 在洛谷页面点扩展图标 → 回训练舱粘贴</h3>
-      <p>在登录的洛谷页面，点工具栏的 🐦 图标 → 弹出「✅ 已复制 N 个 Cookie」。</p>
-      <p>然后回到 <a href="./index.html" target="_blank" rel="noopener">训练舱</a> → <b>高级设置 → 洛谷 Cookie 旁点「📋 从剪贴板粘贴」</b>，搞定。</p>
-      <p class="dim">以后 Cookie 过期，重新登录洛谷 → 再点一下 🐦 图标 → 粘贴，30 秒搞定。</p>
+    <div class="step">
+      <h3><span class="n">3</span>切到 Network（网络）并刷新</h3>
+      <p>在面板顶部点「<b>Network</b> / 网络」标签 → 然后按 <b>F5</b> 刷新页面（保持面板开着）。此时面板里会列出所有请求，像这样：</p>
+      <div class="mock">
+        <div class="mock-bar"><span class="tab on">Network</span><span>Console</span><span>Elements</span><span>⋯</span></div>
+        <div class="mock-row"><span class="name">www.luogu.com.cn</span><span class="mark">← 点这一条</span></div>
+        <div class="mock-row"><span class="name">_lfe/config?...</span></div>
+        <div class="mock-row"><span class="name">columba/loader.js</span></div>
+      </div>
     </div>
 
-    <details class="alt">
-      <summary>不想装扩展？试试备用方案（书签 / F12）</summary>
-      <div class="step-card">
-        <h3>备用 A：书签小工具（只能复制部分 Cookie）</h3>
-        <p>把下面的按钮拖到书签栏；在洛谷页面点书签。若弹窗提示「Cookie 不完整」，说明 <code class="inline">_uid</code> / <code class="inline">__client_id</code> 是 HttpOnly，需改用扩展或 F12。</p>
-        <div class="bookmarklet-wrap">
-          <a id="bmLink" href="#">🐦 复制洛谷 Cookie</a>
-          <div class="sub">拖到书签栏；拖不动就右键 → 「复制链接地址」→ 新建书签粘贴</div>
+    <div class="step">
+      <h3><span class="n">4</span>找 Cookie 行并整段复制</h3>
+      <p>点列表里<b>第一条 <code class="inline">www.luogu.com.cn</code></b> 的请求（Name 列），右侧出现详情 → 找「<b>Request Headers / 请求标头</b>」区域：</p>
+      <div class="mock">
+        <div class="mock-detail">
+          Request Headers<br>
+          :authority: www.luogu.com.cn<br>
+          :method: GET<br>
+          <span class="hl">Cookie: _uid=123456; __client_id=xxxxxxxx; C3VK=xxxxxx</span>　← 整段复制这一行（从 <code>_uid=</code> 或 <code>__client_id=</code> 开始的一大串，不用管有几个）<br>
+          User-Agent: Mozilla/5.0 ...
         </div>
-        <p><code id="bmCode" class="inline" style="display:block;white-space:pre-wrap;word-break:break-all;line-height:1.7;"></code></p>
-        <button type="button" id="copyCodeBtn" class="btn ghost small">复制这段代码（手动建书签用）</button>
       </div>
-      <div class="step-card">
-        <h3>备用 B：F12 手动复制（100% 完整）</h3>
-        <p>洛谷页面按 <b>F12</b> → <b>Network</b> → 刷新 → 点任意一条 <code class="inline">luogu.com.cn</code> 请求 → <b>Request Headers</b> 里找到 <code class="inline">Cookie:</code> 一行，整段复制。</p>
-      </div>
-    </details>
+      <p>用鼠标从 <code class="inline">Cookie:</code> 后面开始<b>整段选中复制</b>（Ctrl+C）。</p>
+    </div>
 
-    <div class="warn-box">
-      🔒 <b>安全说明：</b>书签脚本只在<b>你正在浏览的洛谷页面</b>上运行，读取的是你自己浏览器的登录态，数据直接进剪贴板，<b>不经过任何服务器、不上传任何人</b>。Cookie 等同账号凭证，只填进你自己的训练舱设置（仅发往你自己的 Worker），不要发给别人。
+    <div class="step">
+      <h3><span class="n">5</span>回训练舱粘贴</h3>
+      <p>回到 <a href="./index.html" target="_blank" rel="noopener">训练舱</a> → 往下滚到「<b>⚙ 高级设置</b>」→ 点「<b>📋 从剪贴板粘贴</b>」（或手动粘进「洛谷 Cookie」框）→ 自动保存。</p>
+    </div>
+
+    <div class="tip">
+      💡 <b>小提示：</b>
+      <br>· 复制的是一长串 <code class="inline">xxx=yyy; aaa=bbb; ...</code>，直接整段粘进去，不用挑拣
+      <br>· Cookie 过期（约一个月）后：重新登录洛谷 → F12 → 重新复制一份 → 粘贴覆盖即可
+      <br>· 找不到 <code class="inline">_uid</code>？说明没登录成功，回到步骤 1
+      <br>· 手机浏览器（无 F12）：可用电脑浏览器操作；或直接用桌面版浏览器登录
     </div>
   </section>
 </main>
-
-<script>
-(function () {
-  // 书签代码：压缩为一行，避免换行丢失；内部字符串用双引号
-  var code = 'javascript:(function(){' +
-    'try{' +
-    'var c=document.cookie;' +
-    'if(!c||c.indexOf("=")<0){alert("未检测到 Cookie：请确认已登录洛谷");return;}' +
-    'var hasKey=/[;\\s]?(_uid|__client_id)=/.test("; "+c);' +
-    'if(!hasKey){alert("⚠️ 读到的 Cookie 不完整（只有 " + c.split(";")[0] + " 等）。\\n\\n洛谷把 _uid / __client_id 标记为 HttpOnly，网页脚本无法读取。\\n\\n请改用：\\n① 浏览器扩展（推荐，见 cookie.html 步骤 ②）\\n② F12 → Network 复制 Cookie 头");return;}' +
-    'var ok=function(){alert("✅ 洛谷 Cookie 已复制到剪贴板！\\n\\n回到训练舱 → 高级设置 → 点「从剪贴板粘贴」");};' +
-    'var fail=function(){prompt("自动复制失败，请手动复制（Ctrl+C）：",c);};' +
-    'if(navigator.clipboard&&navigator.clipboard.writeText){' +
-    'navigator.clipboard.writeText(c).then(ok,fail);' +
-    '}else{prompt("请手动复制（Ctrl+C）：",c);}' +
-    '}catch(e){prompt("请手动复制（Ctrl+C）：",document.cookie);}' +
-    '})();';
-  var a = document.getElementById('bmLink');
-  a.setAttribute('href', code);
-  document.getElementById('bmCode').textContent = code;
-  document.getElementById('copyCodeBtn').onclick = function () {
-    navigator.clipboard.writeText(code).then(function () {
-      var b = document.getElementById('copyCodeBtn');
-      b.textContent = '✓ 已复制';
-      setTimeout(function () { b.textContent = '复制这段代码'; }, 2000);
-    });
-  };
-})();
-</script>
 </body>
 </html>
