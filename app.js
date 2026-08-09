@@ -728,8 +728,8 @@ function renderCards() {
       <div class="card-body" id="body-${esc(p.pid)}" hidden></div>`;
     list.appendChild(card);
   }
-  // 默认展开第一题（可关闭）
-  if (s.problems.length) toggleCard(s.problems[0].pid, true);
+  // 默认展开全部题目
+  s.problems.forEach(p => toggleCard(p.pid, true));
 }
 window.toggleCard = function (pid, forceOpen) {
   const body = $('body-' + pid);
@@ -979,9 +979,9 @@ function togglePause() {
 function resetToConfig() {
   stopTimer();
   clearSession();
+  setCta(null); // 清掉上一轮的阶段提示，避免残留
   $('sessionPanel').hidden = true;
   $('configPanel').hidden = false;
-  setPhaseBadge('idle'); // 简单隐藏
   $('phaseBadge').hidden = true;
   renderPhaseTabs();
 }
