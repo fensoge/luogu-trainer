@@ -425,12 +425,19 @@ function renderTagChips(filter = '') {
 }
 
 async function loadTags() {
+  const render = () => { renderTagChips($('tagSearch').value); $('tagPickHint').textContent = '已加载 ' + S.allTags.length + ' 个算法标签；多选时首个标签走服务端，其余本地过滤。'; };
   try {
     await fetchTags();
-    renderTagChips($('tagSearch').value);
-    $('tagPickHint').textContent = '已加载 ' + S.allTags.length + ' 个算法标签；多选时首个标签走服务端，其余本地过滤。';
+    render();
   } catch (e) {
-    $('tagChips').innerHTML = '<span class="chip-pending">标签加载失败：' + esc(e.message) + '（可稍后重试或先忽略标签）</span>';
+    // 自动重试一次（公共代理偶发坏响应）
+    try {
+      await sleep(1500);
+      await fetchTags();
+      render();
+      return;
+    } catch (e2) { /* 落到底部错误提示 */ }
+    $('tagChips').innerHTML = '<span class="chip-pending">标签加载失败：' + esc(e.message) + '（可点「网络自检」查看代理连通性，稍后重试）</span>';
   }
 }
 
@@ -999,11 +1006,13 @@ function init() {
   loadSettings();
   applySettingsToUI();
   wireEvents();
-  loadTags();
+  // 先加载标签（避免与网络自检并发抢占代理状态），完成后再自检
+  loadTags().then(() => {
+    restoreSession();
+    netSelfTest();
+  });
   // 请求通知权限（用户手势之前静默请求，失败无妨）
   try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch (e) {}
-  restoreSession();
-  netSelfTest();
 }
 
 document.addEventListener('DOMContentLoaded', init);
