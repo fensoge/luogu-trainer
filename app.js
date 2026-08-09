@@ -298,8 +298,38 @@ function enhanceContent(root) {
   } catch (e) {}
 }
 
-// 将题解 HTML 拆成 { thoughtHtml, codes: [{lang, text}] }
+// 将题解内容拆成 { thoughtHtml, codes: [{lang, text}] }
+// 新版洛谷题解 content 为 markdown 文本（含 ```lang 代码围栏）；兼容旧版 HTML
 function splitSolution(content) {
+  if (typeof content === 'object') {
+    // 结构化对象：拼成 markdown
+    const parts = [];
+    for (const [k, title] of [['description', '题解'], ['content', '题解'], ['hint', '提示']]) {
+      if (typeof content[k] === 'string' && content[k]) parts.push('## ' + title + '\n\n' + content[k]);
+    }
+    content = parts.join('\n\n');
+  }
+  if (typeof content !== 'string' || !content.trim()) return { thoughtHtml: '', codes: [] };
+  if (!content.includes('```')) {
+    // 旧格式：HTML
+    return splitHtmlSolution(content);
+  }
+  // markdown 格式：剥代码围栏
+  const codes = [];
+  const thoughtMd = content.replace(/```([a-zA-Z0-9_+-]*)[ \t]*\r?\n([\s\S]*?)(?:\r?\n)?```/g, (m, lang, code) => {
+    codes.push({ lang: langOfFence(lang), text: code.replace(/\r\n/g, '\n').trim() });
+    return '<div class="code-removed">（参考代码已隐藏 —— 第三阶段再解锁）</div>';
+  });
+  return { thoughtHtml: sanitizeHtml(mdToHtml(thoughtMd)), codes };
+}
+
+function langOfFence(lang) {
+  const l = String(lang || '').toLowerCase();
+  for (const [k, arr] of Object.entries(LANG_MAP)) if (arr.includes(l)) return k;
+  return l || 'other';
+}
+
+function splitHtmlSolution(content) {
   let html = sanitizeHtml(contentToHtml(content, false) || '');
   const codes = [];
   html = html.replace(/<pre[\s\S]*?<\/pre>/gi, (block) => {
@@ -315,7 +345,6 @@ function splitSolution(content) {
     codes.push({ lang, text: plain.trim() });
     return '<div class="code-removed">（参考代码已隐藏 —— 第三阶段再解锁）</div>';
   });
-  // 修正换行：HTML 原文 <p> 等之间补空白
   return { thoughtHtml: html, codes };
 }
 
@@ -326,10 +355,21 @@ async function fetchSolution(pid) {
   if (!d) throw new Error('题解页解析失败');
   const err = d.data && (d.data.errorCode || (d.data.error && d.data.error.code));
   if (d.status === 401 || err === 401) { const e = new Error('NEED_LOGIN'); e.code = 'NEED_LOGIN'; throw e; }
-  const sol = (d.data && (d.data.solution || d.data.solutions)) || null;
+  // 新版结构：data.solutions.result[]；旧版兼容：data.solution
+  let sol = null;
+  if (d.data && Array.isArray(d.data.solutions && d.data.solutions.result) && d.data.solutions.result.length) {
+    const list = d.data.solutions.result.filter(s => s && s.content && s.content.trim().length > 30);
+    if (list.length) {
+      sol = list.slice().sort((a, b) => (b.upvote || 0) - (a.upvote || 0))[0];
+    }
+  } else if (d.data && d.data.solution) {
+    sol = d.data.solution;
+  }
   if (!sol) throw new Error('该题暂无可用题解');
   const content = sol.content || sol.contents || '';
-  const author = (sol.author && (sol.author.name || sol.author.nickname)) || '';
+  let author = '';
+  if (typeof sol.author === 'string') { try { author = (JSON.parse(sol.author) || {}).name || ''; } catch (e) {} }
+  else if (sol.author && typeof sol.author === 'object') author = sol.author.name || sol.author.nickname || '';
   const { thoughtHtml, codes } = splitSolution(content);
   return { pid, title: sol.title || '', author, thoughtHtml, codes, fetchedAt: Date.now() };
 }
