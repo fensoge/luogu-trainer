@@ -57,9 +57,18 @@ git push -u origin main
 1. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages → 创建 → Worker**
 2. 把仓库里的 [`worker.js`](./worker.js) 全文粘贴进去 → **部署**
 3. 回到工具「高级设置」：
-   - 代理方式选 **自定义 Worker 代理**
+   - 代理方式选 **自定义 Worker 代理**（或保持「自动」，会自动优先用 Worker）
    - 填入 `https://<你的worker名>.workers.dev`
 4. 可选：给 Worker 绑定自定义域名（设置 → 域名和路由），地址更稳定
+
+> 命令行部署（国内网络 wrangler 上传可能失败，已内置兜底脚本）：
+> ```bash
+> npm i                     # 安装 wrangler + undici
+> npx wrangler login        # 浏览器授权（若 fetch failed，可改用下面的脚本）
+> CLOUDFLARE_API_TOKEN=<令牌> npx wrangler deploy
+> # 或：CF_TOKEN=<OAuth令牌> CF_ACCOUNT=<账号ID> node deploy.mjs
+> ```
+> `deploy.mjs` 用 undici 走本地代理（识别 `HTTPS_PROXY` 环境变量）上传，网络受限环境更稳。
 
 ### 3. 获取洛谷登录 Cookie（只需要题解时）
 

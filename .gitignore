@@ -3,3 +3,7 @@ _probe_*
 *.network-response
 .DS_Store
 Thumbs.db
+
+# node 依赖与临时文件
+node_modules/
+.wrangler/
