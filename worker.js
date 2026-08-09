@@ -32,6 +32,21 @@ export default {
     // 目标地址：?url= 参数，未提供则把 Worker 自身路径原样转发到洛谷
     let target = url.searchParams.get('url');
     if (!target) {
+      // 直接访问 Worker 根路径：返回使用说明，而不是转发洛谷首页
+      if (url.pathname === '/' || url.pathname === '') {
+        return new Response(
+          '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>Luogu Trainer 代理</title>' +
+          '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+          '<style>body{font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif;background:#0a0e14;color:#e6edf7;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}code{background:#111826;padding:2px 8px;border-radius:6px;border:1px solid #2b3b55}.card{max-width:640px;padding:40px;border:1px solid #2b3b55;border-radius:16px;background:#111826}h1{font-size:22px;color:#4de68c}p{line-height:1.8;color:#8b9bb4}a{color:#4de68c}</style>' +
+          '</head><body><div class="card">' +
+          '<h1>Luogu Trainer · Cloudflare Worker 代理</h1>' +
+          '<p>这是 <b>洛谷刷题训练舱</b> 的后端代理（解决 CORS + 携带登录 Cookie 获取题解），不是工具本身。</p>' +
+          '<p>工具前端：<a href="https://fensoge.github.io/luogu-trainer/" target="_blank" rel="noopener">fensoge.github.io/luogu-trainer/</a></p>' +
+          '<p>调用方式：<code>/?url=&lt;洛谷地址URL编码&gt;</code>，可选请求头 <code>X-Luogu-Cookie</code>。</p>' +
+          '</div></body></html>',
+          { status: 200, headers: { ...cors, 'Content-Type': 'text/html; charset=utf-8' } }
+        );
+      }
       target = 'https://www.luogu.com.cn' + url.pathname + url.search;
     }
 
