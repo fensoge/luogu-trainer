@@ -1,0 +1,5 @@
+# 本地临时文件 / 探测文件
+_probe_*
+*.network-response
+.DS_Store
+Thumbs.db
