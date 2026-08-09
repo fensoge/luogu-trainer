@@ -130,8 +130,10 @@ async function fetchText(url, opts = {}) {
   else if (S.proxyMode === 'allorigins') order = ['allorigins'];
   else if (S.proxyMode === 'worker') order = ['worker'];
   else {
-    // 自动：优先可用代理缓存；无缓存时 Worker(若配置) → jina → allorigins → 直连
+    // 自动：优先可用代理缓存；无缓存时按内容类型分流
+    // JSON 接口（tags）jina 会包成 HTML，故 allorigins 优先；HTML 页面 jina 更稳
     if (proxyOrder && proxyOrder.length) order = proxyOrder;
+    else if (expect === 'json') order = ['allorigins', 'jina', 'direct'];
     else {
       order = [];
       if (S.workerUrl) order.push('worker');
