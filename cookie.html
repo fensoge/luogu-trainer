@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🔑 洛谷 Cookie 快速获取 · 训练舱助手</title>
+<link rel="stylesheet" href="style.css?v=7">
+<style>
+  .step-card { border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin: 14px 0; background: rgba(21,30,45,.6); }
+  .step-card h3 { font-size: 15px; margin-bottom: 10px; color: var(--acc); }
+  .step-card p, .step-card li { font-size: 13.5px; color: var(--text-dim); line-height: 1.9; }
+  .step-card b { color: var(--text); }
+  .bookmarklet-wrap { margin: 14px 0; padding: 18px; border: 1px dashed var(--acc); border-radius: 12px; text-align: center; background: rgba(77,230,140,.06); }
+  .bookmarklet-wrap a { font-size: 16px; font-weight: 800; padding: 10px 22px; display: inline-block; border: 1px solid var(--acc); border-radius: 10px; background: rgba(77,230,140,.12); text-decoration: none; }
+  .bookmarklet-wrap a:hover { background: rgba(77,230,140,.25); text-decoration: none; }
+  .bookmarklet-wrap .sub { font-size: 12px; color: var(--text-faint); margin-top: 10px; }
+  code.inline { font-family: var(--mono); background: var(--panel2); padding: 1px 7px; border-radius: 6px; border: 1px solid var(--line); font-size: 12.5px; }
+  .alt { margin-top: 10px; }
+  details.alt summary { cursor: pointer; color: var(--text-dim); font-size: 13px; }
+  .warn-box { border: 1px solid rgba(255,180,84,.4); background: rgba(255,180,84,.06); border-radius: 12px; padding: 14px 18px; font-size: 12.5px; color: var(--text-dim); line-height: 1.9; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand"><span class="brand-mark">🔑</span>
+    <div class="brand-text"><h1>洛谷 Cookie 快速获取</h1><p>30 秒搞定 · 无需打开开发者工具</p></div>
+  </div>
+</div></header>
+
+<main class="shell">
+  <section class="panel">
+    <div class="panel-head"><h2><span class="idx">01</span> 三步拿到你的 Cookie</h2></div>
+
+    <div class="step-card">
+      <h3>① 登录洛谷（新窗口）</h3>
+      <p>点击 <a href="https://www.luogu.com.cn" target="_blank" rel="noopener">luogu.com.cn</a> 并<b>登录你的账号</b>。登录后保持在那个页面，别关。</p>
+    </div>
+
+    <div class="step-card">
+      <h3>② 把下面的按钮拖到浏览器书签栏</h3>
+      <div class="bookmarklet-wrap">
+        <a id="bmLink" href="#">🐦 复制洛谷 Cookie</a>
+        <div class="sub">拖住这个按钮，拉到书签栏松开即可（Chrome / Edge 都支持）<br>如果拖不动：右键 → 「复制链接地址」，新建书签时粘贴进去（名称随意）</div>
+      </div>
+      <p>书签名字可以随意改，不影响使用。</p>
+    </div>
+
+    <div class="step-card">
+      <h3>③ 在洛谷页面点书签 → 回训练舱粘贴</h3>
+      <p>回到刚才打开的洛谷页面（已登录状态），点书签栏里的「🐦 复制洛谷 Cookie」→ 弹出「已复制」。</p>
+      <p>然后回到 <a href="./index.html" target="_blank" rel="noopener">训练舱</a> → <b>高级设置 → 洛谷 Cookie 旁点「📋 从剪贴板粘贴」</b>，搞定。</p>
+    </div>
+
+    <details class="alt">
+      <summary>书签拖不动 / 浏览器不支持？试试手动方式（备用）</summary>
+      <div class="step-card">
+        <h3>备用 A：直接复制这段代码（手动建书签）</h3>
+        <p>在书签栏右键 → 添加网页 → 名称随意，URL 粘贴下面的完整代码：</p>
+        <p><code id="bmCode" class="inline" style="display:block;white-space:pre-wrap;word-break:break-all;line-height:1.7;"></code></p>
+        <button type="button" id="copyCodeBtn" class="btn ghost small">复制这段代码</button>
+      </div>
+      <div class="step-card">
+        <h3>备用 B：F12 手动复制（老办法）</h3>
+        <p>洛谷页面按 <b>F12</b> → <b>Network</b> → 刷新 → 点任意一条请求 → <b>Request Headers</b> 里找到 <code class="inline">Cookie:</code> 一行，整段复制。</p>
+      </div>
+    </details>
+
+    <div class="warn-box">
+      🔒 <b>安全说明：</b>书签脚本只在<b>你正在浏览的洛谷页面</b>上运行，读取的是你自己浏览器的登录态，数据直接进剪贴板，<b>不经过任何服务器、不上传任何人</b>。Cookie 等同账号凭证，只填进你自己的训练舱设置（仅发往你自己的 Worker），不要发给别人。
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  // 书签代码：压缩为一行，避免换行丢失；内部字符串用双引号
+  var code = 'javascript:(function(){' +
+    'try{' +
+    'var c=document.cookie;' +
+    'if(!c||c.indexOf("=")<0){alert("未检测到 Cookie：请确认已登录洛谷");return;}' +
+    'var ok=function(){alert("✅ 洛谷 Cookie 已复制到剪贴板！\\n\\n回到训练舱 → 高级设置 → 点「从剪贴板粘贴」");};' +
+    'var fail=function(){prompt("自动复制失败，请手动复制（Ctrl+C）：",c);};' +
+    'if(navigator.clipboard&&navigator.clipboard.writeText){' +
+    'navigator.clipboard.writeText(c).then(ok,fail);' +
+    '}else{prompt("请手动复制（Ctrl+C）：",c);}' +
+    '}catch(e){prompt("请手动复制（Ctrl+C）：",document.cookie);}' +
+    '})();';
+  var a = document.getElementById('bmLink');
+  a.setAttribute('href', code);
+  document.getElementById('bmCode').textContent = code;
+  document.getElementById('copyCodeBtn').onclick = function () {
+    navigator.clipboard.writeText(code).then(function () {
+      var b = document.getElementById('copyCodeBtn');
+      b.textContent = '✓ 已复制';
+      setTimeout(function () { b.textContent = '复制这段代码'; }, 2000);
+    });
+  };
+})();
+</script>
+</body>
+</html>

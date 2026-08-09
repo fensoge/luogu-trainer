@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -122,7 +122,11 @@
       <div class="adv-grid">
         <div class="cfg-block span2">
           <label class="lbl">洛谷 Cookie <span class="dim">（仅“思路/代码”需要 · 只存本机）</span></label>
-          <input type="password" id="luoguCookie" class="inp mono" placeholder="__client_id=xxx; _uid=xxx; …" autocomplete="off">
+          <div class="cookie-row">
+            <input type="password" id="luoguCookie" class="inp mono" placeholder="__client_id=xxx; _uid=xxx; …" autocomplete="off">
+            <button type="button" id="pasteCookieBtn" class="btn ghost small" title="从剪贴板读取并填入">📋 从剪贴板粘贴</button>
+            <a class="btn ghost small" href="cookie.html" target="_blank" rel="noopener">🔑 30秒快速获取</a>
+          </div>
           <p class="hint">打开 luogu.com.cn 登录后，F12 → Network → 任意请求的 Cookie 头整段复制粘贴到这里。仅用于请求题解页，不会离开你的浏览器/代理。</p>
         </div>
         <div class="cfg-block">
@@ -208,6 +212,6 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

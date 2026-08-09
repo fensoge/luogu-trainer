@@ -1064,6 +1064,19 @@ function wireEvents() {
   $('keyword').onchange = (e) => { S.keyword = e.target.value; saveSettings(); };
   $('goal').onchange = (e) => { S.goal = e.target.value; saveSettings(); };
   $('luoguCookie').onchange = (e) => { S.cookie = e.target.value.trim(); saveSettings(); };
+  $('pasteCookieBtn').onclick = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const t = (text || '').trim();
+      if (!t || !t.includes('=')) { toast('剪贴板里没有可用的 Cookie（请先用书签工具复制）', 'warn'); return; }
+      S.cookie = t;
+      $('luoguCookie').value = t;
+      saveSettings();
+      toast('Cookie 已填入并保存 ✓', 'ok');
+    } catch (e) {
+      toast('无法读取剪贴板：浏览器需允许剪贴板权限（HTTPS 下可用），或手动粘贴', 'err');
+    }
+  };
   $('proxyMode').onchange = (e) => { S.proxyMode = e.target.value; $('workerUrl').disabled = S.proxyMode !== 'worker'; saveSettings(); };
   $('workerUrl').onchange = (e) => { S.workerUrl = e.target.value.trim().replace(/\/+$/, ''); saveSettings(); };
   // 标签搜索
