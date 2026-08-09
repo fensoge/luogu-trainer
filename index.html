@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LUOGU TRAINER · 洛谷刷题训练舱</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦</text></svg>">
+<title>LUOGU TRAINER 路 娲涜胺鍒烽璁粌鑸?/title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>馃惁</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -20,31 +20,31 @@
     <div class="brand">
       <span class="brand-mark">LT</span>
       <div class="brand-text">
-        <h1>洛谷刷题训练舱</h1>
-        <p>LUOGU TRAINER · 限时解题 · 思路复盘 · 代码对照</p>
+        <h1>娲涜胺鍒烽璁粌鑸?/h1>
+        <p>LUOGU TRAINER 路 闄愭椂瑙ｉ 路 鎬濊矾澶嶇洏 路 浠ｇ爜瀵圭収</p>
       </div>
     </div>
     <div id="phaseBadge" class="phase-badge idle" hidden>
       <span class="phase-dot"></span>
-      <span id="phaseBadgeText">待机</span>
+      <span id="phaseBadgeText">寰呮満</span>
     </div>
   </div>
 </header>
 
 <main class="shell">
 
-  <!-- ============ 配置面板 ============ -->
+  <!-- ============ 閰嶇疆闈㈡澘 ============ -->
   <section id="configPanel" class="panel config">
     <div class="panel-head">
-      <h2><span class="idx">01</span> 训练配置</h2>
-      <p class="sub">输入目标 · 生成题单</p>
+      <h2><span class="idx">01</span> 璁粌閰嶇疆</h2>
+      <p class="sub">杈撳叆鐩爣 路 鐢熸垚棰樺崟</p>
     </div>
 
     <div class="cfg-grid">
       <div class="cfg-block span2">
-        <label class="lbl">难度模式</label>
+        <label class="lbl">闅惧害妯″紡</label>
         <div class="seg" id="diffModeSeg">
-          <button type="button" data-mode="luogu" class="seg-btn active">洛谷难度</button>
+          <button type="button" data-mode="luogu" class="seg-btn active">娲涜胺闅惧害</button>
           <button type="button" data-mode="cf" class="seg-btn">CF Rating</button>
         </div>
 
@@ -55,110 +55,109 @@
         <div id="diffCf" hidden>
           <div class="cf-row">
             <input type="number" id="cfMin" class="inp mono" placeholder="1200" min="0" max="4000" step="50">
-            <span class="cf-sep">–</span>
+            <span class="cf-sep">鈥?/span>
             <input type="number" id="cfMax" class="inp mono" placeholder="1600" min="0" max="4000" step="50">
-            <button type="button" id="cfApply" class="btn ghost small">换算</button>
+            <button type="button" id="cfApply" class="btn ghost small">鎹㈢畻</button>
           </div>
-          <p class="hint">CF Rating 按社区通用映射近似换算为洛谷难度区间；洛谷题面本身不标注 CF 分数。</p>
+          <p class="hint">CF Rating 鎸夌ぞ鍖洪€氱敤鏄犲皠杩戜技鎹㈢畻涓烘礇璋烽毦搴﹀尯闂达紱娲涜胺棰橀潰鏈韩涓嶆爣娉?CF 鍒嗘暟銆?/p>
           <div class="chips" id="cfResult" hidden></div>
         </div>
       </div>
 
       <div class="cfg-block">
-        <label class="lbl">题目数量</label>
+        <label class="lbl">棰樼洰鏁伴噺</label>
         <div class="n-row">
           <input type="range" id="numN" min="1" max="8" step="1" value="4">
-          <output id="numNOut" class="mono">4</output><span class="unit">题</span>
+          <output id="numNOut" class="mono">4</output><span class="unit">棰?/span>
         </div>
       </div>
 
       <div class="cfg-block">
-        <label class="lbl">参考代码语言</label>
+        <label class="lbl">鍙傝€冧唬鐮佽瑷€</label>
         <div class="seg" id="langSeg">
           <button type="button" data-lang="cpp" class="seg-btn active">C++</button>
           <button type="button" data-lang="py" class="seg-btn">Python</button>
-          <button type="button" data-lang="any" class="seg-btn">任意</button>
+          <button type="button" data-lang="any" class="seg-btn">浠绘剰</button>
         </div>
       </div>
 
       <div class="cfg-block span2">
-        <label class="lbl">算法标签 <span class="dim">（可多选 · 支持搜索）</span></label>
-        <input type="text" id="tagSearch" class="inp" placeholder="搜索标签，如：动态规划 / 图论 / 贪心…">
+        <label class="lbl">绠楁硶鏍囩 <span class="dim">锛堝彲澶氶€?路 鏀寔鎼滅储锛?/span></label>
+        <input type="text" id="tagSearch" class="inp" placeholder="鎼滅储鏍囩锛屽锛氬姩鎬佽鍒?/ 鍥捐 / 璐績鈥?>
         <div class="chips tag-chips" id="tagChips">
-          <span class="chip-pending">标签加载中…</span>
+          <span class="chip-pending">鏍囩鍔犺浇涓€?/span>
         </div>
-        <p class="hint" id="tagPickHint">点击选择；多选时服务端按第一个标签筛，其余在本地二次过滤。</p>
+        <p class="hint" id="tagPickHint">鐐瑰嚮閫夋嫨锛涘閫夋椂鏈嶅姟绔寜绗竴涓爣绛剧瓫锛屽叾浣欏湪鏈湴浜屾杩囨护銆?/p>
       </div>
 
       <div class="cfg-block">
-        <label class="lbl">关键词 <span class="dim">（可选）</span></label>
-        <input type="text" id="keyword" class="inp" placeholder="题目名 / 题号 / 来源，如 DP">
+        <label class="lbl">鍏抽敭璇?<span class="dim">锛堝彲閫夛級</span></label>
+        <input type="text" id="keyword" class="inp" placeholder="棰樼洰鍚?/ 棰樺彿 / 鏉ユ簮锛屽 DP">
       </div>
 
       <div class="cfg-block">
-        <label class="lbl">刷题目标 <span class="dim">（可选备注）</span></label>
-        <input type="text" id="goal" class="inp" placeholder="如：本周拿下区间 DP">
+        <label class="lbl">鍒烽鐩爣 <span class="dim">锛堝彲閫夊娉級</span></label>
+        <input type="text" id="goal" class="inp" placeholder="濡傦細鏈懆鎷夸笅鍖洪棿 DP">
       </div>
 
       <div class="cfg-block">
-        <label class="lbl">第一轮计时（独立思考）</label>
+        <label class="lbl">绗竴杞鏃讹紙鐙珛鎬濊€冿級</label>
         <div class="n-row">
           <input type="range" id="t1" min="5" max="120" step="5" value="45">
-          <output id="t1Out" class="mono">45</output><span class="unit">分钟</span>
+          <output id="t1Out" class="mono">45</output><span class="unit">鍒嗛挓</span>
         </div>
       </div>
 
       <div class="cfg-block">
-        <label class="lbl">第二轮计时（理解后实现）</label>
+        <label class="lbl">绗簩杞鏃讹紙鐞嗚В鍚庡疄鐜帮級</label>
         <div class="n-row">
           <input type="range" id="t2" min="5" max="120" step="5" value="25">
-          <output id="t2Out" class="mono">25</output><span class="unit">分钟</span>
+          <output id="t2Out" class="mono">25</output><span class="unit">鍒嗛挓</span>
         </div>
       </div>
     </div>
 
     <details class="adv">
-      <summary>⚙ 高级设置（代理 / Cookie）</summary>
+      <summary>鈿?楂樼骇璁剧疆锛堜唬鐞?/ Cookie锛?/summary>
       <div class="adv-grid">
         <div class="cfg-block span2">
-          <label class="lbl">洛谷 Cookie <span class="dim">（仅“思路/代码”需要 · 只存本机）</span></label>
-          <input type="password" id="luoguCookie" class="inp mono" placeholder="__client_id=xxx; _uid=xxx; …" autocomplete="off">
-          <p class="hint">打开 luogu.com.cn 登录后，F12 → Network → 任意请求的 Cookie 头整段复制粘贴到这里。仅用于请求题解页，不会离开你的浏览器/代理。</p>
+          <label class="lbl">娲涜胺 Cookie <span class="dim">锛堜粎鈥滄€濊矾/浠ｇ爜鈥濋渶瑕?路 鍙瓨鏈満锛?/span></label>
+          <input type="password" id="luoguCookie" class="inp mono" placeholder="__client_id=xxx; _uid=xxx; 鈥? autocomplete="off">
+          <p class="hint">鎵撳紑 luogu.com.cn 鐧诲綍鍚庯紝F12 鈫?Network 鈫?浠绘剰璇锋眰鐨?Cookie 澶存暣娈靛鍒剁矘璐村埌杩欓噷銆備粎鐢ㄤ簬璇锋眰棰樿В椤碉紝涓嶄細绂诲紑浣犵殑娴忚鍣?浠ｇ悊銆?/p>
         </div>
         <div class="cfg-block">
-          <label class="lbl">代理方式</label>
+          <label class="lbl">浠ｇ悊鏂瑰紡</label>
           <select id="proxyMode" class="inp">
-            <option value="auto" selected>自动（推荐）</option>
-            <option value="allorigins">allorigins 公共代理</option>
-            <option value="worker">自定义 Worker 代理</option>
-            <option value="direct">直连（一般会因 CORS 失败）</option>
+            <option value="auto" selected>鑷姩锛堟帹鑽愶級</option>
+            <option value="allorigins">allorigins 鍏叡浠ｇ悊</option>
+            <option value="worker">鑷畾涔?Worker 浠ｇ悊</option>
+            <option value="direct">鐩磋繛锛堜竴鑸細鍥?CORS 澶辫触锛?/option>
           </select>
         </div>
         <div class="cfg-block">
-          <label class="lbl">Worker 代理地址</label>
-          <input type="url" id="workerUrl" class="inp mono" placeholder="https://你的代理.workers.dev" disabled>
-          <p class="hint">部署仓库内 <code>worker.js</code> 后填入地址；支持携带 Cookie 获取题解。</p>
+          <label class="lbl">Worker 浠ｇ悊鍦板潃</label>
+          <input type="url" id="workerUrl" class="inp mono" placeholder="https://浣犵殑浠ｇ悊.workers.dev" disabled>
+          <p class="hint">閮ㄧ讲浠撳簱鍐?<code>worker.js</code> 鍚庡～鍏ュ湴鍧€锛涙敮鎸佹惡甯?Cookie 鑾峰彇棰樿В銆?/p>
         </div>
       </div>
     </details>
 
     <div class="config-actions">
       <button type="button" id="startBtn" class="btn primary big">
-        <span class="btn-ico">▶</span> 生成题单 &amp; 开始计时
-      </button>
-      <button type="button" id="testNetBtn" class="btn ghost">网络自检</button>
+        <span class="btn-ico">鈻?/span> 鐢熸垚棰樺崟 &amp; 寮€濮嬭鏃?      </button>
+      <button type="button" id="testNetBtn" class="btn ghost">缃戠粶鑷</button>
     </div>
-    <p class="hint" id="netStatus">尚未检测连接。</p>
+    <p class="hint" id="netStatus">灏氭湭妫€娴嬭繛鎺ャ€?/p>
   </section>
 
-  <!-- ============ 训练会话 ============ -->
+  <!-- ============ 璁粌浼氳瘽 ============ -->
   <section id="sessionPanel" class="panel session" hidden>
     <div class="session-head">
       <div class="goal-banner" id="goalBanner" hidden></div>
       <div class="phases">
-        <div class="phase" id="ph1"><span class="ph-n">P1</span><span>独立思考</span></div>
-        <div class="phase" id="ph2"><span class="ph-n">P2</span><span>理解实现</span></div>
-        <div class="phase" id="ph3"><span class="ph-n">P3</span><span>代码复盘</span></div>
+        <div class="phase" id="ph1"><span class="ph-n">P1</span><span>鐙珛鎬濊€?/span></div>
+        <div class="phase" id="ph2"><span class="ph-n">P2</span><span>鐞嗚В瀹炵幇</span></div>
+        <div class="phase" id="ph3"><span class="ph-n">P3</span><span>浠ｇ爜澶嶇洏</span></div>
       </div>
     </div>
 
@@ -168,19 +167,19 @@
         <circle class="ring-fg" id="ringFg" cx="110" cy="110" r="100"/>
       </svg>
       <div class="timer-core">
-        <div class="timer-label" id="timerLabel">独立思考中</div>
+        <div class="timer-label" id="timerLabel">鐙珛鎬濊€冧腑</div>
         <div class="timer-time mono" id="timerTime">45:00</div>
-        <div class="timer-sub" id="timerSub">本轮共 4 题</div>
+        <div class="timer-sub" id="timerSub">鏈疆鍏?4 棰?/div>
       </div>
       <div class="timer-actions">
-        <button type="button" id="pauseBtn" class="btn ghost small">⏸ 暂停</button>
-        <button type="button" id="skipBtn" class="btn ghost small">⏭ 跳过本轮</button>
+        <button type="button" id="pauseBtn" class="btn ghost small">鈴?鏆傚仠</button>
+        <button type="button" id="skipBtn" class="btn ghost small">鈴?璺宠繃鏈疆</button>
       </div>
     </div>
 
     <div class="bg-progress" id="bgProgress" hidden>
       <div class="bg-bar"><div class="bg-fill" id="bgFill"></div></div>
-      <p id="bgText">后台整理题解思路中…</p>
+      <p id="bgText">鍚庡彴鏁寸悊棰樿В鎬濊矾涓€?/p>
     </div>
 
     <div class="phase-cta" id="phaseCta" hidden>
@@ -191,14 +190,14 @@
     <div class="card-list" id="cardList"></div>
 
     <div class="session-actions">
-      <button type="button" id="againBtn" class="btn ghost small">↻ 再来一轮（同配置）</button>
-      <button type="button" id="resetBtn" class="btn ghost small danger-text">✕ 结束并清空</button>
+      <button type="button" id="againBtn" class="btn ghost small">鈫?鍐嶆潵涓€杞紙鍚岄厤缃級</button>
+      <button type="button" id="resetBtn" class="btn ghost small danger-text">鉁?缁撴潫骞舵竻绌?/button>
     </div>
   </section>
 
   <footer class="foot">
-    <p>数据来自 <a href="https://www.luogu.com.cn" target="_blank" rel="noopener">洛谷 Luogu</a>（匿名接口）· 仅供个人学习使用 · 请遵守洛谷用户协议与题解标准</p>
-    <p class="dim">思路/代码取自洛谷题解页，需登录 Cookie；若未配置，相关功能会提示不可用。</p>
+    <p>鏁版嵁鏉ヨ嚜 <a href="https://www.luogu.com.cn" target="_blank" rel="noopener">娲涜胺 Luogu</a>锛堝尶鍚嶆帴鍙ｏ級路 浠呬緵涓汉瀛︿範浣跨敤 路 璇烽伒瀹堟礇璋风敤鎴峰崗璁笌棰樿В鏍囧噯</p>
+    <p class="dim">鎬濊矾/浠ｇ爜鍙栬嚜娲涜胺棰樿В椤碉紝闇€鐧诲綍 Cookie锛涜嫢鏈厤缃紝鐩稿叧鍔熻兘浼氭彁绀轰笉鍙敤銆?/p>
   </footer>
 </main>
 
@@ -208,6 +207,7 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
+
