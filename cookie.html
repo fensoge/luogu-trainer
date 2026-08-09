@@ -38,31 +38,39 @@
     </div>
 
     <div class="step-card">
-      <h3>② 把下面的按钮拖到浏览器书签栏</h3>
-      <div class="bookmarklet-wrap">
-        <a id="bmLink" href="#">🐦 复制洛谷 Cookie</a>
-        <div class="sub">拖住这个按钮，拉到书签栏松开即可（Chrome / Edge 都支持）<br>如果拖不动：右键 → 「复制链接地址」，新建书签时粘贴进去（名称随意）</div>
-      </div>
-      <p>书签名字可以随意改，不影响使用。</p>
+      <h3>② 安装「洛谷 Cookie 复制器」扩展（推荐，支持全部 Cookie）</h3>
+      <p>⚠️ 洛谷把关键 Cookie（<code class="inline">_uid</code> / <code class="inline">__client_id</code>）标记为 <b>HttpOnly</b>，网页脚本（书签）读不到，只有扩展能一键复制全量。</p>
+      <p>安装步骤（一次约 1 分钟，之后永久可用）：</p>
+      <ol>
+        <li>打开仓库 <a href="https://github.com/fensoge/luogu-trainer" target="_blank" rel="noopener">github.com/fensoge/luogu-trainer</a> → 绿色 <b>Code</b> → <b>Download ZIP</b> → 解压</li>
+        <li>Chrome / Edge 地址栏输入 <code class="inline">chrome://extensions</code> 回车 → 打开右上角「开发者模式」</li>
+        <li>点「<b>加载已解压的扩展程序</b>」→ 选择解压出的 <code class="inline">extension</code> 文件夹</li>
+        <li>工具栏出现 🐦 图标即安装成功（固定到工具栏更方便）</li>
+      </ol>
     </div>
 
     <div class="step-card">
-      <h3>③ 在洛谷页面点书签 → 回训练舱粘贴</h3>
-      <p>回到刚才打开的洛谷页面（已登录状态），点书签栏里的「🐦 复制洛谷 Cookie」→ 弹出「已复制」。</p>
+      <h3>③ 在洛谷页面点扩展图标 → 回训练舱粘贴</h3>
+      <p>在登录的洛谷页面，点工具栏的 🐦 图标 → 弹出「✅ 已复制 N 个 Cookie」。</p>
       <p>然后回到 <a href="./index.html" target="_blank" rel="noopener">训练舱</a> → <b>高级设置 → 洛谷 Cookie 旁点「📋 从剪贴板粘贴」</b>，搞定。</p>
+      <p class="dim">以后 Cookie 过期，重新登录洛谷 → 再点一下 🐦 图标 → 粘贴，30 秒搞定。</p>
     </div>
 
     <details class="alt">
-      <summary>书签拖不动 / 浏览器不支持？试试手动方式（备用）</summary>
+      <summary>不想装扩展？试试备用方案（书签 / F12）</summary>
       <div class="step-card">
-        <h3>备用 A：直接复制这段代码（手动建书签）</h3>
-        <p>在书签栏右键 → 添加网页 → 名称随意，URL 粘贴下面的完整代码：</p>
+        <h3>备用 A：书签小工具（只能复制部分 Cookie）</h3>
+        <p>把下面的按钮拖到书签栏；在洛谷页面点书签。若弹窗提示「Cookie 不完整」，说明 <code class="inline">_uid</code> / <code class="inline">__client_id</code> 是 HttpOnly，需改用扩展或 F12。</p>
+        <div class="bookmarklet-wrap">
+          <a id="bmLink" href="#">🐦 复制洛谷 Cookie</a>
+          <div class="sub">拖到书签栏；拖不动就右键 → 「复制链接地址」→ 新建书签粘贴</div>
+        </div>
         <p><code id="bmCode" class="inline" style="display:block;white-space:pre-wrap;word-break:break-all;line-height:1.7;"></code></p>
-        <button type="button" id="copyCodeBtn" class="btn ghost small">复制这段代码</button>
+        <button type="button" id="copyCodeBtn" class="btn ghost small">复制这段代码（手动建书签用）</button>
       </div>
       <div class="step-card">
-        <h3>备用 B：F12 手动复制（老办法）</h3>
-        <p>洛谷页面按 <b>F12</b> → <b>Network</b> → 刷新 → 点任意一条请求 → <b>Request Headers</b> 里找到 <code class="inline">Cookie:</code> 一行，整段复制。</p>
+        <h3>备用 B：F12 手动复制（100% 完整）</h3>
+        <p>洛谷页面按 <b>F12</b> → <b>Network</b> → 刷新 → 点任意一条 <code class="inline">luogu.com.cn</code> 请求 → <b>Request Headers</b> 里找到 <code class="inline">Cookie:</code> 一行，整段复制。</p>
       </div>
     </details>
 
@@ -79,6 +87,8 @@
     'try{' +
     'var c=document.cookie;' +
     'if(!c||c.indexOf("=")<0){alert("未检测到 Cookie：请确认已登录洛谷");return;}' +
+    'var hasKey=/[;\\s]?(_uid|__client_id)=/.test("; "+c);' +
+    'if(!hasKey){alert("⚠️ 读到的 Cookie 不完整（只有 " + c.split(";")[0] + " 等）。\\n\\n洛谷把 _uid / __client_id 标记为 HttpOnly，网页脚本无法读取。\\n\\n请改用：\\n① 浏览器扩展（推荐，见 cookie.html 步骤 ②）\\n② F12 → Network 复制 Cookie 头");return;}' +
     'var ok=function(){alert("✅ 洛谷 Cookie 已复制到剪贴板！\\n\\n回到训练舱 → 高级设置 → 点「从剪贴板粘贴」");};' +
     'var fail=function(){prompt("自动复制失败，请手动复制（Ctrl+C）：",c);};' +
     'if(navigator.clipboard&&navigator.clipboard.writeText){' +

@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "洛谷 Cookie 复制器",
+  "version": "1.0.0",
+  "description": "一键复制洛谷登录 Cookie（支持 HttpOnly），配合洛谷刷题训练舱使用",
+  "permissions": ["cookies", "clipboardWrite"],
+  "host_permissions": ["https://*.luogu.com.cn/*"],
+  "action": {
+    "default_title": "复制洛谷 Cookie",
+    "default_popup": "popup.html"
+  }
+}

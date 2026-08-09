@@ -72,9 +72,11 @@ git push -u origin main
 
 ### 3. 获取洛谷登录 Cookie（只需要题解时）
 
-**推荐方式（30 秒，无需开发者工具）**：打开站点里的 [`cookie.html`](./cookie.html)（在线：`https://<你的用户名>.github.io/luogu-trainer/cookie.html`）→ 按三步操作：登录洛谷 → 把书签按钮拖到书签栏 → 在洛谷页面点书签复制 Cookie → 回训练舱高级设置点「📋 从剪贴板粘贴」。
+> ⚠️ 洛谷把 `_uid` / `__client_id` 标记为 **HttpOnly**，网页脚本（书签）无法读取，只支持扩展或 F12 两种方式。
 
-手动方式：
+**推荐方式 A（扩展，30 秒，支持全部 Cookie）**：下载本仓库 ZIP → 解压 → 打开 `chrome://extensions` 开发者模式 → 「加载已解压的扩展程序」选 `extension` 文件夹 → 在登录的洛谷页面点工具栏 🐦 图标复制 → 回训练舱高级设置点「📋 从剪贴板粘贴」。详见站点内 [`cookie.html`](./cookie.html)。
+
+**推荐方式 B（F12，100% 完整）**：
 1. 浏览器登录 [luogu.com.cn](https://www.luogu.com.cn)
 2. 按 `F12` → **Network（网络）** → 刷新页面 → 点任意一条 `luogu.com.cn` 请求
 3. 在 **Request Headers** 里找到 `Cookie:` 那一行，**整段复制**
